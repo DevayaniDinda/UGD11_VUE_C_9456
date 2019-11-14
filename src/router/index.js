@@ -16,6 +16,10 @@ const routes = [
             { name: 'UserController', 
             path: '', 
             component: loadView('userController') 
+            },
+            { name: 'branchesController', 
+            path: '/branches', 
+            component: loadView('branchesController') 
             } 
         ] 
     }, 

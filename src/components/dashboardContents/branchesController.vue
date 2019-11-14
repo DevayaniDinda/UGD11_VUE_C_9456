@@ -4,7 +4,7 @@
             <v-container grid-list-md mb-0>
     
                 <h2 class="text-md-center">
-                    Data User
+                    Data Cabang Bengkel "Sejahtera 9456"
                 </h2> 
                 
                 <v-layout row wrap style="margin:10px"> 
@@ -18,7 +18,7 @@
                             
                             <v-icon size="18" class="mr-2">mdi-pencil-plus</v-icon> 
                             
-                            Tambah User 
+                            Tambah Cabang Bengkel
                         </v-btn> 
                     </v-flex> 
                     
@@ -34,7 +34,7 @@
                 
                 <v-data-table 
                     :headers="headers" 
-                    :items="users" 
+                    :items="branchess" 
                     :search="keyword" 
                     :loading="load" > 
                     <template v-slot:body="{ items }"> 
@@ -42,8 +42,9 @@
                             <tr v-for="(item,index) in items" :key="item.id"> 
                                 <td>{{ index + 1 }}</td> 
                                 <td>{{ item.name }}</td> 
-                                <td>{{ item.email}}</td> 
-                                <td>{{ item.password }}</td> 
+                                <td>{{ item.address }}</td> 
+                                <td>{{ item.phoneNumber }}</td>
+                                <td>{{ item.created_at }}</td> 
                                 <td class="text-center"> 
                                     <v-btn icon color="indigo" light @click="editHandler(item)" > 
                                         <v-icon>mdi-pencil</v-icon> 
@@ -62,18 +63,18 @@
 
             <v-dialog v-model="dialog" persistent max-width="600px"> 
                 <v-card> 
-                    <v-card-title> <span class="headline">User Profile</span> </v-card-title>
+                    <v-card-title> <span class="headline">Data Cabang Bengkel Baru</span> </v-card-title>
                     <v-card-text> 
                         <v-container> 
                             <v-row> 
                                 <v-col cols="12"> 
-                                    <v-text-field label="Name*" v-model="form.name" required></v-text-field> 
+                                    <v-text-field label="Nama Cabang*" v-model="form.name" required></v-text-field> 
                                 </v-col> 
                                 <v-col cols="12"> 
-                                    <v-text-field label="Email*" v-model="form.email" required></v-text-field> 
+                                    <v-text-field label="Alamat Cabang*" v-model="form.address" required></v-text-field> 
                                 </v-col> 
                                 <v-col cols="12"> 
-                                    <v-text-field label="Password*" v-model="form.password" type="password" required></v-text-field> 
+                                    <v-text-field label="Nomor Telepon*" v-model="form.phoneNumber" required></v-text-field> 
                                 </v-col> 
                             </v-row> 
                         </v-container> 
@@ -109,22 +110,24 @@
                 keyword: '', 
                 headers: [ 
                     { text: 'No', value: 'no' }, 
-                    { text: 'Name', value: 'name' }, 
-                    { text: 'Email', value: 'email' }, 
-                    { text: 'Password', value: 'password' }, 
+                    { text: 'Nama Cabang', value: 'name' }, 
+                    { text: 'Alamat Cabang', value: 'address' }, 
+                    { text: 'Nomor Telepon', value: 'phoneNumber' },
+                    { text: 'Diinput Pada :', value: 'created_at'},
                     { text: 'Aksi', value: null }, 
                 ], 
-                users: [], 
+                branchess : [], 
                 snackbar: false, 
                 color: null, 
                 text: '', 
                 load: false,
                 form: { 
                     name : '', 
-                    email : '', 
-                    password : '' 
+                    address : '', 
+                    phoneNumber : '',
+                    created_at : '' 
                 }, 
-                user : new FormData, 
+                branches : new FormData, 
                 typeInput: 'new', 
                 errors : '', 
                 updatedId : '', 
@@ -134,25 +137,25 @@
                 
         methods:{ 
             getData(){ 
-                var uri = this.$apiUrl + '/user' 
+                var uri = this.$apiUrl + '/branches' 
                 this.$http.get(uri).then(response =>{ 
-                    this.users=response.data.message 
+                    this.branchess=response.data.message 
                 }) 
             }, 
             
             sendData(){ 
-                this.user.append('name', this.form.name); 
-                this.user.append('email', this.form.email); 
-                this.user.append('password', this.form.password); 
-                var uri =this.$apiUrl + '/user' 
+                this.branches.append('name', this.form.name); 
+                this.branches.append('address', this.form.address); 
+                this.branches.append('phoneNumber', this.form.phoneNumber); 
+                var uri =this.$apiUrl + '/branches' 
                 this.load = true;
-                this.$http.post(uri,this.user).then(response =>{ 
+                this.$http.post(uri,this.branches).then(response =>{ 
                     this.snackbar = true; //mengaktifkan snackbar 
                     this.color = 'green'; //memberi warna snackbar 
                     this.text = response.data.message; //memasukkan pesan ke snackbar 
                     this.load = false; 
                     this.dialog = false; 
-                    this.getData(); //mengambil data user 
+                    this.getData(); //mengambil data cabang
                     this.resetForm(); 
                 }).catch(error =>{ 
                     this.errors = error;
@@ -163,18 +166,18 @@
             }, 
             
             updateData(){ 
-                this.user.append('name', this.form.name); 
-                this.user.append('email', this.form.email); 
-                this.user.append('password', this.form.password); 
-                var uri = this.$apiUrl + '/user/' + this.updatedId; 
+                this.branches.append('name', this.form.name); 
+                this.branches.append('address', this.form.address); 
+                this.branches.append('phoneNumber', this.form.phoneNumber); 
+                var uri = this.$apiUrl + '/branches/' + this.updatedId; 
                 this.load = true;
-                this.$http.post(uri,this.user).then(response =>{
+                this.$http.post(uri,this.branches).then(response =>{
                     this.snackbar = true; //mengaktifkan snackbar 
                     this.color = 'green'; //memberi warna snackbar 
                     this.text = response.data.message; //memasukkan pesan ke snackbar 
                     this.load = false; 
                     this.dialog = false;
-                    this.getData(); //mengambil data user 
+                    this.getData(); //mengambil data branches
                     this.resetForm(); 
                     this.typeInput = 'new'; 
                 }).catch(error =>{ 
@@ -191,14 +194,14 @@
                 this.typeInput = 'edit'; 
                 this.dialog = true; 
                 this.form.name = item.name; 
-                this.form.email = item.email; 
-                this.form.password = '', 
+                this.form.address = item.address; 
+                this.form.phoneNumber = '', 
                 this.updatedId = item.id;
             }, 
             
             deleteData(deleteId){ 
                 //menghapus data
-                var uri = this.$apiUrl + '/user/' + deleteId; //data dihapus berdasarkan id
+                var uri = this.$apiUrl + '/branches/' + deleteId; //data dihapus berdasarkan id
 
                 this.$http.delete(uri).then(response =>{
                     this.snackbar = true;
@@ -226,8 +229,8 @@
             resetForm(){ 
                 this.form = { 
                     name : '', 
-                    email : '', 
-                    password : '' 
+                    address : '', 
+                    phoneNumber : '' 
                 } 
             } 
         }, 
